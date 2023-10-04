@@ -1,12 +1,12 @@
 import './App.css';
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import MainLayout from './components/MainLayout';
 import HomePage from './pages/HomePage';
 import TransactionsPage from './pages/TransactionsPage';
 import BalancesPage from './pages/BalancesPage';
 import MonthlySpendingsPage from './pages/MonthlySpendingsPage';
-import PlaidLinkButton from './PlaidLinkButton'; // Assuming you've created this component as previously instructed
+import PlaidLinkButton from './PlaidLinkButton';
 
 function App() {
   const handlePlaidSuccess = async (publicToken) => {
@@ -50,15 +50,12 @@ function App() {
   return (
     <Router>
       <MainLayout>
-        <Switch>
-          <Route path="/" exact>
-            <HomePage />
-            <PlaidLinkButton onSuccess={handlePlaidSuccess} />
-          </Route>
-          <Route path="/transactions" component={TransactionsPage} />
-          <Route path="/balances" component={BalancesPage} />
-          <Route path="/monthly-spendings" component={MonthlySpendingsPage} />
-        </Switch>
+        <Routes>
+          <Route path="/" element={<><HomePage /><PlaidLinkButton onSuccess={handlePlaidSuccess} /></>} />
+          <Route path="/transactions" element={<TransactionsPage />} />
+          <Route path="/balances" element={<BalancesPage />} />
+          <Route path="/monthly-spendings" element={<MonthlySpendingsPage />} />
+        </Routes>
       </MainLayout>
     </Router>
   );
