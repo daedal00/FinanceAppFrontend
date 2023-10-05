@@ -1,33 +1,36 @@
-import React, { useState, useEffect } from 'react';
+// src/PlaidLinkButton.js
+
+import React from 'react';
 import PlaidLink from 'react-plaid-link';
 
-function PlaidLinkButton({ onPlaidSuccess }) {
-  const [linkToken, setLinkToken] = useState(null);
-
-  useEffect(() => {
-    // Fetch the link token from your backend
-    const fetchLinkToken = async () => {
-      try {
-        const response = await fetch('http://your-backend-url/get-link-token');
-        const data = await response.json();
-        setLinkToken(data.linkToken); // Assuming your backend returns the token with this key
-      } catch (error) {
-        console.error('Error fetching link token:', error);
+function PlaidLinkButton() {
+  const handlePlaidSuccess = (publicToken) => {
+    fetch('http://localhost:8081/api/plaid/exchange-token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+      },
+      body: JSON.stringify({ publicToken })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data && data.accessToken) {
+        // Handle success, maybe fetch account details or transactions now
       }
-    };
-
-    fetchLinkToken();
-  }, []);
-
-  if (!linkToken) {
-    return <div>Loading...</div>;
-  }
+    })
+    .catch(error => {
+      console.error('Error exchanging Plaid token:', error);
+    });
+  };
 
   return (
     <PlaidLink
-      token={linkToken}
-      onExit={console.log}
-      onSuccess={onPlaidSuccess}
+      clientName="Your Client Name"
+      env="development"
+      product={['auth', 'transactions']}
+      publicKey="YOUR_PLAID_PUBLIC_KEY"
+      onSuccess={handlePlaidSuccess}
     >
       Connect to Plaid
     </PlaidLink>

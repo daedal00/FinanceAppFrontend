@@ -1,62 +1,25 @@
-import './App.css';
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import MainLayout from './components/MainLayout';
-import HomePage from './pages/HomePage';
-import TransactionsPage from './pages/TransactionsPage';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LoginPage from './components/Login';
+import SignUpPage from './components/SignUp';
+import Dashboard from './pages/Dashboard';
 import BalancesPage from './pages/BalancesPage';
+import TransactionsPage from './pages/TransactionsPage';
 import MonthlySpendingsPage from './pages/MonthlySpendingsPage';
-import PlaidLinkButton from './PlaidLinkButton';
+import ProfileManagement from './components/ProfileManagement';
 
 function App() {
-  const handlePlaidSuccess = async (publicToken) => {
-    try {
-      const response = await fetch("http://localhost:8081/api/plaid/exchange-token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ publicToken })
-      });
-  
-      const data = await response.json();
-      if (data.accessToken) {
-        // Fetch accounts
-        const accountsResponse = await fetch("http://localhost:8081/api/accounts", {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${data.accessToken}`
-          }
-        });
-        const accounts = await accountsResponse.json();
-  
-        // Fetch transactions
-        const transactionsResponse = await fetch("http://localhost:8081/api/transactions", {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${data.accessToken}`
-          }
-        });
-        const transactions = await transactionsResponse.json();
-  
-        // Now you can set these in your state or context to display them in your components
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-  
-
   return (
     <Router>
-      <MainLayout>
-        <Routes>
-          <Route path="/" element={<><HomePage /><PlaidLinkButton onSuccess={handlePlaidSuccess} /></>} />
-          <Route path="/transactions" element={<TransactionsPage />} />
-          <Route path="/balances" element={<BalancesPage />} />
-          <Route path="/monthly-spendings" element={<MonthlySpendingsPage />} />
-        </Routes>
-      </MainLayout>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/balances" element={<BalancesPage />} />
+        <Route path="/transactions" element={<TransactionsPage />} />
+        <Route path="/monthly-spendings" element={<MonthlySpendingsPage />} />
+        <Route path="/profile" element={<ProfileManagement />} />
+        {/* You can add more routes as needed */}
+      </Routes>
     </Router>
   );
 }

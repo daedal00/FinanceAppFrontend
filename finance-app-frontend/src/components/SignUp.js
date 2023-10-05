@@ -1,54 +1,75 @@
-// src/components/SignUp.js
-
 import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function SignUp() {
-  const [formData, setFormData] = useState({
-    email: '',
-    username: '',
-    password: '',
-    firstName: '',
-    lastName: ''
-  });
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8081/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
+      const response = await axios.post('http://localhost:8081/api/users', {
+        username,
+        email,
+        password,
+        firstName,
+        lastName
       });
-
-      const data = await response.json();
-      if (data.id) {
-        // Handle successful sign-up, e.g., redirect to login page or show a success message
-      } else {
-        // Handle sign-up error, e.g., display error message
+      if (response.status === 200) {
+        navigate('/login');
       }
     } catch (error) {
-      console.error("Error during sign-up:", error);
+      if (error.response && error.response.status === 409) {
+        setErrorMessage('Username or Email already exists');
+      } else {
+        setErrorMessage('Error during sign-up. Please try again.');
+      }
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input type="email" name="email" placeholder="Email" onChange={handleChange} />
-      <input type="text" name="username" placeholder="Username" onChange={handleChange} />
-      <input type="password" name="password" placeholder="Password" onChange={handleChange} />
-      <input type="text" name="firstName" placeholder="First Name" onChange={handleChange} />
-      <input type="text" name="lastName" placeholder="Last Name" onChange={handleChange} />
-      <button type="submit">Sign Up</button>
-    </form>
+    <div>
+      <form onSubmit={handleSignUp}>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="First Name"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Last Name"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+        />
+        <button type="submit">Sign Up</button>
+      </form>
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+    </div>
   );
 }
 

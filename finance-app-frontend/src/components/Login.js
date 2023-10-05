@@ -1,47 +1,47 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8081/api/users/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, password })
+      const response = await axios.post('http://localhost:8081/api/users/login', {
+        username,
+        password
       });
-      const data = await response.json();
-      if (data && data.token) {
-        localStorage.setItem('jwtToken', data.token);
-        // Redirect to user's profile or dashboard
+      if (response.data && response.data.success) {
+        navigate('/dashboard');
       } else {
-        // Handle login error
+        // Handle login error (e.g., display an error message to the user)
       }
     } catch (error) {
-      console.error('Error during login:', error);
+      console.error("Error during login:", error);
     }
   };
 
   return (
-    <form onSubmit={handleLogin}>
-      <input
-        type="text"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="Username"
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-      />
-      <button type="submit">Login</button>
-    </form>
+    <div>
+      <form onSubmit={handleLogin}>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">Login</button>
+      </form>
+    </div>
   );
 }
 
