@@ -14,13 +14,13 @@ function SignUp() {
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8081/api/users', {
-        username,
-        email,
-        password,
-        firstName,
-        lastName
-      });
+      const response = await axios.post('http://localhost:8081/api/users/register', {
+          username,
+          email,
+          password,
+          firstName,
+          lastName
+        });
       if (response.status === 200) {
         navigate('/login');
       }

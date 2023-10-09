@@ -14,7 +14,7 @@ function Login() {
         username,
         password
       });
-      if (response.data && response.data.success) {
+      if (response.data && response.data.jwt) {
         navigate('/dashboard');
       } else {
         // Handle login error (e.g., display an error message to the user)
