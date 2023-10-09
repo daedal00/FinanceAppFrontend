@@ -1,39 +1,29 @@
-// src/PlaidLinkButton.js
-
-import React from 'react';
-import PlaidLink from 'react-plaid-link';
+import { usePlaidLink } from 'react-plaid-link';
 
 function PlaidLinkButton() {
-  const handlePlaidSuccess = (publicToken) => {
-    fetch('http://localhost:8081/api/plaid/exchange-token', {
+  const onSuccess = (publicToken, metadata) => {
+    // Send the publicToken to your backend to exchange for an access token
+    fetch('/plaid/set_access_token', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ publicToken })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data && data.accessToken) {
-        // Handle success, maybe fetch account details or transactions now
-      }
-    })
-    .catch(error => {
-      console.error('Error exchanging Plaid token:', error);
+      body: JSON.stringify({ public_token: publicToken })
     });
   };
 
+  const config = {
+    token: '<GENERATED_LINK_TOKEN>',
+    onSuccess,
+    // ... other Link configurations
+  };
+
+  const { open, ready } = usePlaidLink(config);
+
   return (
-    <PlaidLink
-      clientName="Your Client Name"
-      env="development"
-      product={['auth', 'transactions']}
-      publicKey="YOUR_PLAID_PUBLIC_KEY"
-      onSuccess={handlePlaidSuccess}
-    >
-      Connect to Plaid
-    </PlaidLink>
+    <button onClick={() => open()} disabled={!ready}>
+      Connect a bank account
+    </button>
   );
 }
 

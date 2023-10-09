@@ -12,13 +12,14 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8081/api/users/login', {
-        username,
-        password
-      });
-      if (response.data && response.data.jwt) {
+      const credentials = btoa(username + ":" + password);
+      const headers = { Authorization: "Basic " + credentials };
+
+      const response = await axios.post('http://localhost:8081/api/users/login', {}, { headers: headers });
+      if (response.status === 200 && response.data.id) {
+        localStorage.setItem('userId', response.data.id);
         navigate('/dashboard');
-      } else {
+    } else {
         // Handle login error (e.g., display an error message to the user)
       }
     } catch (error) {
