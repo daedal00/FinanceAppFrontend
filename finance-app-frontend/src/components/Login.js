@@ -2,6 +2,14 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 
+function getCsrfToken() {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; XSRF-TOKEN=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+axios.defaults.headers.post['X-XSRF-TOKEN'] = getCsrfToken();
+
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
