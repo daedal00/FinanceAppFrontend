@@ -3,19 +3,6 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 axios.defaults.withCredentials = true;
 
-const getCsrfToken = () => {
-  let csrfToken = null;
-  const cookies = document.cookie.split(';');
-  for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].trim();
-      if (cookie.startsWith('XSRF-TOKEN=')) {
-          csrfToken = cookie.split('=')[1];
-          break;
-      }
-  }
-  return csrfToken;
-};
-
 function SignUp() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -34,10 +21,6 @@ function SignUp() {
             password,
             firstName,
             lastName
-        }, {
-            headers: {
-                'X-XSRF-TOKEN': getCsrfToken()
-            }
         });
       if (response.status === 200) {
         navigate('/login');
