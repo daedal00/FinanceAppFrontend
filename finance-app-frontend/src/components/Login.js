@@ -19,7 +19,8 @@ function Login() {
       if (response.status === 200 && response.data.id) {
         localStorage.setItem('userId', response.data.id);
         navigate('/dashboard');
-    } else {
+    }
+  else {
         // Handle login error (e.g., display an error message to the user)
       }
     } catch (error) {

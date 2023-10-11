@@ -49,8 +49,14 @@ function Dashboard() {
     }
   };
 
+  function logout() {
+    localStorage.removeItem('userId'); // Clear the user ID from local storage
+    window.location.href = '/login';  // Redirect to login page
+  }
+
   return (
     <div>
+      <button onClick={logout}>Logout</button> {/* This is the logout button */}
       {isPlaidLinked ? (
         <>
           <h2>Your Balance: ${balance}</h2>
