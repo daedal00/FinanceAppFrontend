@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import PlaidLinkButton from '../PlaidLinkButton';
+import App from '../PlaidLinkButton'; // Import the App component which contains the Plaid Link logic
 
 function Dashboard() {
   const [isPlaidLinked, setIsPlaidLinked] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [balance, setBalance] = useState(0);
-  const userId = localStorage.getItem('userId'); // Retrieve user ID from local storage
+  const userId = localStorage.getItem('userId');
 
   useEffect(() => {
     const checkPlaidLinkStatus = async () => {
       try {
-        const response = await axios.get('http://localhost:8081/api/users/check-plaid-link', { params: { userId: userId } });
+        const response = await axios.get('http://localhost:8081/api/users/check-plaid-link', { params: { userId: userId }, withCredentials: true });
         setIsPlaidLinked(response.data.isPlaidLinked);
       } catch (error) {
         console.error("Error checking Plaid link status:", error);
@@ -19,15 +19,16 @@ function Dashboard() {
     };
 
     checkPlaidLinkStatus();
+  }, [userId]);
 
+  useEffect(() => {
     if (isPlaidLinked) {
-      // Fetch transactions and balance from your backend
       const fetchPlaidData = async () => {
         try {
-          const transactionsResponse = await axios.get('http://localhost:8081/plaid/info/transactions', { params: { userId: userId } });
+          const transactionsResponse = await axios.get('http://localhost:8081/plaid/info/transactions', { params: { userId: userId }, withCredentials: true });
           setTransactions(transactionsResponse.data);
 
-          const balanceResponse = await axios.get('http://localhost:8081/plaid/info/total-balance', { params: { userId: userId } });
+          const balanceResponse = await axios.get('http://localhost:8081/plaid/info/total-balance', { params: { userId: userId }, withCredentials: true });
           setBalance(balanceResponse.data);
         } catch (error) {
           console.error("Error fetching Plaid data:", error);
@@ -38,9 +39,9 @@ function Dashboard() {
     }
   }, [isPlaidLinked, userId]);
 
-  const handlePlaidSuccess = async (publicToken) => {
+  const handlePlaidSuccess = async (publicToken, linkToken) => {
     try {
-      const response = await axios.post('http://localhost:8081/plaid/info/exchange-public-token', { publicToken }, { params: { userId: userId } });
+      const response = await axios.post('http://localhost:8081/plaid/info/exchange-public-token', { publicToken, linkToken }, { params: { userId: userId }, withCredentials: true });
       if (response.data) {
         setIsPlaidLinked(true);
       }
@@ -49,14 +50,13 @@ function Dashboard() {
     }
   };
 
-  function logout() {
-    localStorage.removeItem('userId'); // Clear the user ID from local storage
-    window.location.href = '/login';  // Redirect to login page
+  async function logout() {
+    // ... (same as before)
   }
 
   return (
     <div>
-      <button onClick={logout}>Logout</button> {/* This is the logout button */}
+      <button onClick={logout}>Logout</button>
       {isPlaidLinked ? (
         <>
           <h2>Your Balance: ${balance}</h2>
@@ -68,7 +68,7 @@ function Dashboard() {
           </ul>
         </>
       ) : (
-        <PlaidLinkButton onPlaidSuccess={handlePlaidSuccess} />
+        <App userId={userId} onPlaidSuccess={handlePlaidSuccess} />
       )}
     </div>
   );
