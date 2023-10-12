@@ -21,6 +21,7 @@ function Dashboard() {
     checkPlaidLinkStatus();
   }, [userId]);
 
+
   useEffect(() => {
     if (isPlaidLinked) {
       const fetchPlaidData = async () => {
@@ -51,8 +52,21 @@ function Dashboard() {
   };
 
   async function logout() {
-    // ... (same as before)
-  }
+    try {
+        await axios.get('http://localhost:8081/api/users/logout');
+
+        setIsPlaidLinked(false);
+        setTransactions([]);
+        setBalance(0);
+
+        localStorage.removeItem('userId');
+
+        window.location.href = '/login';
+    } catch (error) {
+        console.error("Error logging out:", error);
+    }
+}
+
 
   return (
     <div>

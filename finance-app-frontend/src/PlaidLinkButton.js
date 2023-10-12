@@ -22,8 +22,9 @@ function PlaidLinkButton({ userId, onPlaidSuccess }) {
         if (!response.ok) {
           throw new Error(`Failed to get link token: ${response.statusText}`);
         }
-        const { link_token } = await response.json();
-        setLinkToken(link_token);
+        const responseData = await response.json();
+        setLinkToken(responseData.linkToken);
+
       } catch (error) {
         console.error('Error creating link token:', error);
       }
