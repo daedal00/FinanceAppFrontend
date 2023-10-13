@@ -9,11 +9,13 @@ import TransactionsPage from './pages/TransactionsPage';
 import MonthlySpendingsPage from './pages/MonthlySpendingsPage';
 import ProfileManagement from './components/ProfileManagement';
 import MainLayout from './components/MainLayout';
+import Navbar from './components/Navbar';
 
 function App() {
   return (
     <Router>
       <MainLayout>
+        <Navbar />
         <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<LoginPage />} />
